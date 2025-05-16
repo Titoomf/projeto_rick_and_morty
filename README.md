@@ -1,1 +1,1 @@
-finalizacao do backend do projeto rick and morty
+finalização do backend do projeto rick and morty
