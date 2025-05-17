@@ -1,4 +1,5 @@
 from src.models import db, ma
+from flask_marshmallow import Marshmallow
 
 
 class Location(db.Model):
@@ -16,6 +17,10 @@ class Location(db.Model):
         "Character", foreign_keys="Character.location_id", back_populates="location"
     )
 
+    @property
+    def residents(self):
+        return (self.characters_origin or []) + (self.characters_location or [])
+
     def __repr__(self):
         return f"<Location {self.name}>"
 
@@ -23,5 +28,13 @@ class Location(db.Model):
 class LocationOutput(ma.Schema):
     id = ma.Integer()
     name = ma.String()
-    air_date = ma.String()
-    episode = ma.String()
+    dimension = ma.String()
+    type = ma.String()
+    residents = db.relationship(
+        "Character", secondary="characters_location", back_populates="locations"
+    )
+
+    resident_count = ma.Method("get_resident_count")
+
+    def get_resident_count(self, obj):
+        return len(obj.residents) if obj.residents else 0

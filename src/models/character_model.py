@@ -1,6 +1,5 @@
 from src.models import db, ma
-from marshmallow import fields
-from datetime import datetime
+from flask_marshmallow import Marshmallow
 
 
 class Character(db.Model):
@@ -32,40 +31,23 @@ class Character(db.Model):
         return f"<Character {self.name}>"
 
 
-class CharacterOutputById(ma.Schema):
+class CharacterOutputAll(ma.Schema):
     id = ma.Integer()
     name = ma.String()
-    image = ma.String()
-    species = ma.String()
     status = ma.String()
-
-    latest_air_date = ma.Function(lambda obj: get_latest_air_date(obj))
-
-
-def get_latest_air_date(character):
-    if not character.episodes:
-        return None
-    try:
-        # Filtra episódios com data válida
-        valid_episodes = [ep for ep in character.episodes if ep.air_date]
-        if not valid_episodes:
-            return None
-        # Ordena pelo air_date convertida para datetime
-        latest_episode = max(
-            valid_episodes, key=lambda ep: datetime.strptime(ep.air_date, "%B %d, %Y")
-        )
-        return latest_episode.air_date
-    except Exception:
-        return None
+    species = ma.String()
 
 
-class CharacterOutputAll(CharacterOutputById):
+class CharacterOutputById(CharacterOutputAll):
     gender = ma.String()
     origin = ma.Nested("LocationOutput", allow_none=True)
     location = ma.Nested("LocationOutput", allow_none=True)
 
+    latest_air_date = ma.Method("get_latest_air_date")
+
+    def get_latest_air_date(self, obj):
+        return obj.episodes[-1].air_date if obj.episodes else None
+
 
 character_output_all = CharacterOutputAll(many=True)
 character_output_by_id = CharacterOutputById()
-
-#     latest_air_date = ma.Function(lambda obj: obj.episodes[-1].air_date if obj.episodes else None)

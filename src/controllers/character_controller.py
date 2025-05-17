@@ -1,4 +1,5 @@
 import traceback
+from werkzeug.exceptions import NotFound
 from flask import jsonify
 from src.services.character_service import CharacterService
 from marshmallow.exceptions import ValidationError
@@ -10,13 +11,11 @@ class CharacterController:
     def __init__(self):
         self.character_service = CharacterService()
 
-    def get_all_characters(self, name, page=1, per_page=20):
+    def get_all_characters(self, name, page=1):
         try:
-            data = self.character_service.get_all_characters(
-                name, page=page, per_page=per_page
-            )
+            data = self.character_service.get_all_characters(name, page=page)
             return ApiResponse.response(
-                True, "Personagens recuperados com sucesso.", data
+                True, "Personagens recuperados com sucesso.", data, 200
             )
         except Exception:
             traceback.print_exc()
@@ -27,16 +26,17 @@ class CharacterController:
     def get_character(self, id):
         try:
             data = self.character_service.get_character(id)
-            if not data:
-                return ApiResponse.response(
-                    False, f"Nenhum personagem encontrado com ID={id}.", None, 404
-                )
+
+            if data is None:
+                raise NotFound(f"Personagem com ID={id} não encontrado.")
 
             return ApiResponse.response(
-                True, "Personagem recuperado com sucesso.", data
+                True, "Personagem recuperado com sucesso.", data, 200
             )
-        except ValidationError as ve:
-            return ApiResponse.response(False, f"Erro de validação: {ve}", None, 400)
+
+        except NotFound as nf:
+            return ApiResponse.response(False, str(nf), None, 404)
+
         except Exception:
             traceback.print_exc()
             return ApiResponse.response(

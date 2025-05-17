@@ -7,7 +7,6 @@ from src.routes.character_routes import character_bp
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config["SQLALCHEMY_TRACK_MOTIFICATIONS"] = False
-# db.init(app)
 
 
 db.init_app(app)
