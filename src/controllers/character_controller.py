@@ -27,9 +27,6 @@ class CharacterController:
         try:
             data = self.character_service.get_character(id)
 
-            if data is None:
-                raise NotFound(f"Personagem com ID={id} não encontrado.")
-
             return ApiResponse.response(
                 True, "Personagem recuperado com sucesso.", data, 200
             )

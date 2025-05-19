@@ -36,6 +36,7 @@ class CharacterOutputAll(ma.Schema):
     name = ma.String()
     status = ma.String()
     species = ma.String()
+    image = ma.String()
 
 
 class CharacterOutputById(CharacterOutputAll):
