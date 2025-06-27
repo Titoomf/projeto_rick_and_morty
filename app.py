@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from config.settings import DATABASE_URI
 from src.models import db, ma
 from src.routes.character_routes import character_bp
@@ -7,6 +8,8 @@ from src.routes.character_routes import character_bp
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
 app.config["SQLALCHEMY_TRACK_MOTIFICATIONS"] = False
+
+CORS(app)
 
 
 db.init_app(app)
