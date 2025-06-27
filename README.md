@@ -1,1 +1,1 @@
-finalização do backend do projeto rick and morty
+fix: building the backend for the rick and morty project
